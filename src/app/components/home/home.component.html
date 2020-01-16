@@ -1,0 +1,363 @@
+<body>
+  <body>
+    <div class="fixed-top">
+      <div class="row" style="margin-top: 0.1%; margin-left: 0.5%; margin-right: 0">
+        <div class="card card-body mb-3 rounded-0" style="border-color: transparent; height: 7.9rem; background-image: url(../../assets/sfondo_navbar.png); background-position: left; background-size: 100%; background-repeat: no-repeat" >
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 8.5rem; margin-left: 5%; margin-right: 5%">
+        <div class="col-md-3" style="padding: 0;">
+          <div class="card card-body mb-3 card1" style="border-color: lightgrey; box-shadow: 10px 10px 5px #aaaaaa; height: 96%;" >
+            <form>
+              <div class="row">
+                <div class="col-md-10" style="padding:0; margin-left: 4%">
+                  <input type="text" class="form-control form-control-sm" placeholder="Inserisci un indirizzo" #address > 
+                </div>
+                <div class="col-md-1"  style="padding:0;  text-align: center;">
+                  <button type="button" style="border-color: transparent; background-color: transparent;" (click)="search(address.value)"><span class="fa fa-search" style="text-align: center"></span></button>
+                </div>
+              </div>
+            </form>
+            <div *ngIf="!details" class="row" style="margin-top: 5%">
+              <p *ngIf="searchAddress" style = "margin-left: 4%">Risultati per <b>{{searchAddress}}</b>:</p>
+              <p *ngIf="emptyresults"style = "margin-left: 4%">Non ci sono risultati</p>
+              <div *ngFor="let res of searchResults" class="card card-body mb-3 mycard" style="border-color: lightgrey; box-shadow: 5px 5px 5px #aaaaaa;" >
+                <a (click)="zoomIn(res.display_name,res.lat, res.lon)" style="cursor: pointer;">{{res.display_name}}</a>
+              </div>
+            </div>
+            <div *ngIf="details" class="row" style="margin-top: 5%">
+              <button type="button" class="btn" (click)="back()" style="background-color: lightgray">Indietro</button>
+              <div class="card card-body mb-3" style="border-color: lightgrey; box-shadow: 10px 10px 5px #aaaaaa; margin-top: 2%" >
+                <h5><b>{{result.display_name}}</b></h5>
+                <p><br> {{result.lat}}° , {{result.lon}}°</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-9" style="padding-bottom: 0;  padding-right: 2%; padding-left: 2%">
+            <div class="row">
+          <div class="card card-body mb-3" style="border-color: lightgrey; box-shadow: 5px 5px 5px #aaaaaa; margin-right: 0" >
+              <div class="row">
+                  <div *ngIf="animation_zoomPM == 0">
+                    <label for="U">Seleziona il tipo di PM da visualizzare</label>
+                  </div>
+                  <div *ngIf="animation_zoomPM == 1">
+                      <label for="U">Tipo pm selezionato: PM 1</label>
+                  </div>
+                  <div *ngIf="animation_zoomPM == 2">
+                      <label for="U">Tipo pm selezionato: PM 2.5</label>
+                  </div>
+                  <div *ngIf="animation_zoomPM == 3">
+                      <label for="U">Tipo pm selezionato: PM 10</label>
+                  </div>
+              </div>
+            
+            <div class="row">
+  
+                
+                
+                    <div class="col-md-2">
+                        <button type="button" class="btn" (click)="startPM10()" style="background-color: rgb(231, 167, 46)">PM10</button>
+                      </div>
+                      <div class="col-md-2">
+                          <button type="button" class="btn" (click)="startPM25()" style="background-color: rgb(231, 167, 46)">PM2.5</button>
+                      </div>
+                      <div class="col-md-2">
+                          <button type="button" class="btn" (click)="startPM1()" style="background-color: rgb(231, 167, 46)">PM1</button>
+                      </div>
+                      
+            </div>
+               
+  
+  
+            <div class="row">
+          
+              <div class="col-md-2" >
+  
+                <select class="form-control form-control-sm" style="margin-top: 5%;" #variability (change)="onChange($event, variability.value)">
+                    <option value="default">Seleziona</option>
+                  <option value="anno">Anno</option>
+                  <option value="mese">Mese</option>
+                  <option value="giorno">Giorno</option>
+                  <option value="ora">Ora</option>
+                </select>
+              </div>
+              <div *ngIf="selectedVariability == 'anno'" class="col-md-2">
+               
+                <div class="row" >
+                  <select class="form-control form-control-sm" #startyear (change)="onChangeStartYear($event, startyear.value)">
+                      <option value="default">Da:</option>
+                      <option *ngFor="let y of startYears" value="{{ y.anno }}">{{ y.anno }}</option>
+                    </select>
+                </div>
+                <div class="row" style="padding-top:5%" >
+                  <select class="form-control form-control-sm" #endyear (change)="onChangeEndYear($event, endyear.value)">
+                      <option value="default"> A:</option>
+                      <option *ngFor="let y of endYears" value="{{ y.anno }}">{{ y.anno }}</option>
+                    </select>
+                </div>
+             
+              </div>
+              <div *ngIf="selectedVariability == 'mese'">
+               
+                    <div class="row">
+                        <div class="col-md-6" style = "padding-right: 2%">
+                  <select class="form-control form-control-sm" #startyear (change)="onChangeStartYearOfMonth($event, startyear.value)">
+                      <option value="default"> Anno inizio:</option>
+                      <option *ngFor="let y of startYears" value="{{ y.anno }}">{{ y.anno }}</option>
+                  </select>
+                    </div>
+                    <div class="col-md-6" style = "padding-left: 0">
+                  <select class="form-control form-control-sm" #startmonth (change)="onChangeStartMonth($event, startmonth.value)">
+                      <option value="default">Mese inizio:</option>
+                      <option *ngFor="let m of startMonths" value="{{ m.numero }}">{{ m.nome }}</option>
+                  </select>
+                  </div>
+                  </div>
+        
+                  <div class="row" style="padding-top: 2%">
+                      <div class="col-md-6" style = "padding-right: 2%">
+                  <select class="form-control form-control-sm" #endyear (change)="onChangeEndYearOfMonth($event, endyear.value)">
+                      <option value="default">Anno fine:</option>
+                      <option *ngFor="let y of endYears" value="{{ y.anno }}">{{ y.anno }}</option>
+                  </select>
+                </div>
+                <div class="col-md-6" style = "padding-left: 0">
+                  <select class="form-control form-control-sm" #endmonth (change)="onChangeEndMonth($event, endmonth.value)">
+                      <option value="default">Mese fine:</option>
+                      <option *ngFor="let m of endMonths" value="{{ m.numero }}">{{ m.nome }}</option>
+                  </select>
+                </div>
+                </div>
+             
+            </div>
+              <div *ngIf="selectedVariability == 'giorno'">
+    
+                  <div class="row">
+                      <div class="col-md-4" style = "padding-right: 1%">
+                  <select class="form-control form-control-sm" #startyear (change)="onChangeStartYearOfDay($event, startyear.value)">
+                      <option value="default">Anno inizio:</option>
+                      <option *ngFor="let y of startYears" value="{{ y.anno }}">{{ y.anno }}</option>
+                  </select>
+                  </div>
+                  <div class="col-md-4" style = "padding-left: 0; padding-right: 1%">
+                  <select class="form-control form-control-sm" #startmonth (change)="onChangeStartMonthOfDay($event, startmonth.value)">
+                      <option value="default">Mese inizio:</option>
+                      <option *ngFor="let m of startMonths" value="{{ m.numero }}">{{ m.nome }}</option>
+                  </select>
+                </div>
+                <div class="col-md-4" style = "padding-left: 0; padding-right: 1%">
+                  <select class="form-control form-control-sm" #startday (change)="onChangeStartDayOfDay($event, startday.value)">
+                      <option value="default">Giorno inizio:</option>
+                      <option *ngFor="let d of startDays" value="{{ d }}">{{ d }}</option>
+                  </select>
+                    </div>
+                  </div>
+                  <div class="row" style="padding-top: 2%">
+                      <div class="col-md-4"  style = "padding-right: 1%">
+                  <select class="form-control form-control-sm" #endyear (change)="onChangeEndYearOfDay($event, endyear.value)">
+                      <option value="default">Anno fine:</option>
+                      <option *ngFor="let y of endYears" value="{{ y.anno }}">{{ y.anno }}</option>
+                  </select>
+                 </div>
+                 <div class="col-md-4"  style = "padding-left: 0; padding-right: 1%"> 
+                  <select class="form-control form-control-sm" #endmonth (change)="onChangeEndMonthOfDay($event, endmonth.value)">
+                      <option value="default"> Mese fine:</option>
+                      <option *ngFor="let m of endMonths" value="{{ m.numero }}">{{ m.nome }}</option>
+                  </select>
+                </div>
+                <div class="col-md-4"  style = "padding-left: 0; padding-right: 1%">
+                  <select class="form-control form-control-sm" #endday (change)="onChangeEndDayOfDay($event, endday.value)">
+                      <option value="default">Giorno fine</option>
+                      <option *ngFor="let d of endDays" value="{{ d }}">{{ d }}</option>
+                  </select>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="selectedVariability == 'ora'">
+                  <div class="row">
+                      <div class="col-md-3" style = "padding-right: 1%">
+                  <select class="form-control form-control-sm" #startyear (change)="onChangeStartYearOfHour($event, startyear.value)">
+                      <option value="default"> Anno inizio:</option>
+                      <option *ngFor="let y of startYears" value="{{ y.anno }}">{{ y.anno }}</option>
+                  </select>
+                  </div>
+                  <div class="col-md-3" style = "padding-left: 0; padding-right: 1%">
+                  
+                  <select class="form-control form-control-sm" #startmonth (change)="onChangeStartMonthOfHour($event, startmonth.value)">
+                      <option value="default">Mese inizio:</option>
+                      <option *ngFor="let m of startMonths" value="{{ m.numero }}">{{ m.nome }}</option>
+                  </select>
+                  </div>
+                
+                  <div class="col-md-3" style = "padding-left: 0; padding-right: 1%">
+                  <select class="form-control form-control-sm" #startday (change)="onChangeStartDayOfHour($event, startday.value)">
+                      <option value="default">Giorno inizio:</option>
+                      <option *ngFor="let d of startDays" value="{{ d }}">{{ d }}</option>
+                  </select>
+                  </div>
+                  
+                  <div class="col-md-3" style = "padding-left: 0; padding-right: 1%">
+                  <select class="form-control form-control-sm" #starthour (change)="onChangeStartHour($event, starthour.value)">
+                      <option value="default">Ora inizio:</option>
+                      <option *ngFor="let h of startHours" value="{{ h }}">{{ h }}</option>
+                  </select>
+                  </div>
+                  </div>
+                  <div class="row" style="padding-top: 2%">
+                  <div class="col-md-3" style = "padding-right: 1%">
+                  <select class="form-control form-control-sm" #endyear (change)="onChangeEndYearOfHour($event, endyear.value)">
+                      <option value="default">Anno fine:</option>
+                      <option *ngFor="let y of endYears" value="{{ y.anno }}">{{ y.anno }}</option>
+                  </select>
+                  </div>
+                  <div class="col-md-3" style = "padding-left: 0; padding-right: 1%">
+                  <select class="form-control form-control-sm" #endmonth (change)="onChangeEndMonthOfHour($event, endmonth.value)">
+                      <option value="default">Mese fine:</option>
+                      <option *ngFor="let m of endMonths" value="{{ m.numero }}">{{ m.nome }}</option>
+                  </select>
+                  </div>
+                  <div class="col-md-3" style = "padding-left: 0; padding-right: 1%">
+                  <select class="form-control form-control-sm" #endday (change)="onChangeEndDayOfHour($event, endday.value)">
+                      <option value="default">Giorno fine:</option>
+                      <option *ngFor="let d of endDays" value="{{ d }}">{{ d }}</option>
+                  </select>
+                </div>
+                <div class="col-md-3" style = "padding-left: 0; padding-right: 1%">
+                  <select class="form-control form-control-sm" #endhour (change)="onChangeEndHour($event, endhour.value)">
+                      <option value="default">Ora fine:</option>
+                      <option *ngFor="let h of endHours" value="{{ h }}">{{ h }}</option>
+                  </select>
+                  </div>
+                  </div>
+              </div>
+              <div *ngIf="selectedVariability != undefined" class="col-md-2">
+                <div class="row">
+                    <button type="button" class="btn" (click)="startAnimation()" style="background-color: rgb(231, 167, 46)">Start</button>
+               
+                  <div class="col-md-6">
+                    <button *ngIf="animating" type="button" class="btn" (click)="stopAnimation()"  style="background-color: rgb(110, 110, 110)">Stop</button>
+                  </div>
+                </div>
+  
+              </div>
+            </div>
+  
+  
+          </div>
+        </div>
+            <div class="row" style="padding-top: 0.1%">
+              <div class="card card-body mb-3" style="border-color: lightgrey; box-shadow: 5px 5px 5px #aaaaaa; padding: 0; margin-right: 0" >
+                <div id="map" class="map">
+                  <div style="background-color: rgba(255,255,255,.6); padding-left:10px; border-radius: 4px; position: absolute; z-index:10000; top: 0; right: 10px; font-family:verdana; font-weight: bold;">{{label}}</div>
+                </div>
+              </div>
+            </div>
+      </div>
+      <div class="row" style="margin-top: 1%; margin-left: 0.5%; margin-right: 0.3%">
+        <div class="card card-body mb-3" style="border-color: lightgrey; box-shadow: 10px 10px 5px #aaaaaa; height: 100%" >
+          <h2>Particolato PM10</h2>
+          <div class="row">
+            <div class="col-md-6" style="padding-top: 1%">
+                <p> PM10 è un acronimo che significa Particulate Matter ≤ 10 µm, ovvero materiale particolato con dimensione inferiore o uguale a 10 micrometri.</p>
+                <p>L’origine di tale particolato può essere naturale: ne fanno parte, per esempio, il particolato espulso durante le eruzioni di vulcani, i prodotti della combustione del legno sviluppati durante gli incendi, oppure i pollini vegetali dispersi nell’aria in primavera. Non sono queste cause naturali, però, a destare preoccupazione: la preoccupazione deve infatti provocarla il nostro forte legame con i combustibili fossili per l’autotrazione e il riscaldamento.</p>
+                <p>I limiti per la concentrazione delle PM10 nell'aria sono così stabiliti:</p>
+                <p> valore massimo per la media annuale: 40 µg/m³</p>
+                <p> Valore massimo giornaliero (24 ore): 50 µg/m³</p>
+                <p><b>[Fonte: https://www.pm10.it/limiti.html]</b></p>
+                <p>Il <b>{{efmediumPM10[0]?.percentage}}%</b> dei nostri utenti è esposto a un livello di particolato PM10 <b>{{efmediumPM10[0]?.label}}</b>.<br>
+                    Il <b>{{efmediumPM10[1]?.percentage}}%</b> dei nostri utenti è esposto a un livello di particolato PM10 <b>{{efmediumPM10[1]?.label}}</b>.<br>
+                    Il <b>{{efmediumPM10[2]?.percentage}}%</b> dei nostri utenti è esposto a un livello di particolato PM10 <b>{{efmediumPM10[2]?.label}}</b>.</p>
+              </div>
+            <div class="col-md-6" style="text-align: center">
+              <svg id="piechartPM10"></svg>
+              <div>
+              <div style="display: inline-block;"><div class="foo green"></div>Basso</div>
+              <div style="display: inline-block"><div class="foo yellow"></div>Medio</div>
+              <div style="display: inline-block"><div class="foo red"></div>Alto</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 1%; margin-left: 0.5%; margin-right: 0.3%">
+        <div class="card card-body mb-3" style="border-color: lightgrey; box-shadow: 10px 10px 5px #aaaaaa; height: 100%" >
+          <h2>Particolato PM2.5</h2>
+          <div class="row">
+            <div class="col-md-6" style="padding-top: 1%">
+                <p> Il PM 2.5 è una classificazione numerica data alle polveri sottili in base alla loro grandezza. Più il numero è minore e più sottili sono le polveri e dunque più pericolose per la salute della specie umana ed animale. Mentre il PM 10 raggiunge solo i bronchi, la trachea e vie respiratorie superiori, il PM 2.5 è in grado di penetrare negli alveoli polmonari con eventuale diffusione nel sangue.</p>
+                <p>Il PM 2.5 è dunque parte di ciò che è definito polveri sottili e si forma maggiormente tramite l'industria ed i prodotti industriali. </p>
+                <p>Il <b>{{efmediumPM25[0]?.percentage}}%</b> dei nostri utenti è esposto a un livello di particolato PM2.5 <b>{{efmediumPM25[0]?.label}}</b>.<br>
+                    Il <b>{{efmediumPM25[1]?.percentage}}%</b> dei nostri utenti è esposto a un livello di particolato PM2.5 <b>{{efmediumPM25[1]?.label}}</b>.<br>
+                    Il <b>{{efmediumPM25[2]?.percentage}}%</b> dei nostri utenti è esposto a un livello di particolato PM2.5 <b>{{efmediumPM25[2]?.label}}</b>.</p>
+              </div>
+            <div class="col-md-6" style="text-align: center">
+              <svg id="piechartPM25"></svg>
+              <div>
+              <div style="display: inline-block;"><div class="foo green"></div>Basso</div>
+              <div style="display: inline-block"><div class="foo yellow"></div>Medio</div>
+              <div style="display: inline-block"><div class="foo red"></div>Alto</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 1%; margin-left: 0.5%; margin-right: 0.3%">
+        <div class="card card-body mb-3" style="border-color: lightgrey; box-shadow: 10px 10px 5px #aaaaaa; height: 100%" >
+          <h2>Particolato PM1</h2>
+          <div class="row">
+            <div class="col-md-6" style="padding-top: 1%">
+                <p> Per dimensioni ancora inferiori (particolato ultrafine, UFP o UP) si parla di polvere respirabile, cioè in grado di penetrare profondamente nei polmoni fino agli alveoli; vi sono discordanze tra le fonti per quanto riguarda la loro definizione, per quanto sia più comune e accettata la definizione di UFP come PM0,1 piuttosto che come PM1 (di cui comunque sono un sottoinsieme):</p>
+                <p>Il particolato ultrafine (UFP) ha un diametro < 0,1 µm ed è formato principalmente da residui della combustione (PM0,1)</p>
+                <p>Il <b>{{efmediumPM1[0]?.percentage}}%</b> dei nostri utenti è esposto a un livello di particolato PM1 <b>{{efmediumPM1[0]?.label}}</b>.<br>
+                    Il <b>{{efmediumPM1[1]?.percentage}}%</b> dei nostri utenti è esposto a un livello di particolato PM1 <b>{{efmediumPM1[1]?.label}}</b>.<br>
+                    Il <b>{{efmediumPM1[2]?.percentage}}%</b> dei nostri utenti è esposto a un livello di particolato PM1 <b>{{efmediumPM1[2]?.label}}</b>.</p>
+              </div>
+            <div class="col-md-6" style="text-align: center">
+              <svg id="piechartPM1"></svg>
+              <div>
+              <div style="display: inline-block;"><div class="foo green"></div>Basso</div>
+              <div style="display: inline-block"><div class="foo yellow"></div>Medio</div>
+              <div style="display: inline-block"><div class="foo red"></div>Alto</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="row" style="margin-top: 1%; margin-left: 5%; margin-right: 5%">
+        <div class="card card-body mb-3" style="border-color: lightgrey; box-shadow: 10px 10px 5px #aaaaaa; height: 100%" >
+          <h2>Come varia in media il valore di PM durante la giornata?</h2>
+          <div class="row">
+            <div class="col-md-6" style="padding-top: 1%">
+                <p>Il limite annuo di PM10 è di 40 µg/m³ </p>
+                <p>Il limite annuo di PM2.5 è di 29 µg/m³ </p>
+                <p>Il limite annuo di PM1 è di 40 µg/m³ </p>
+                <p>Abbiamo sfruttato i dati raccolti da AirBeam tramite gli smartphone degli utenti per ottenere l'andamento medio nelle 24h dei livelli di PM10, PM2.5 e PM1 nell'aria.</p>
+                <p><b style="font-size:12px;">[Fonte: http://www.salute.gov.it/imgs/C_17_paginaRelazione_1438_listaFile_itemName_1_file.pdf]</b></p>
+                <p><b style="font-size:12px;">[Fonte: http://www.salute.gov.it/imgs/C_17_paginaRelazione_1438_listaFile_itemName_2_file.pdf]</b></p>
+              </div>
+            <div class="col-md-6" style="text-align: center; vertical-align: center">
+              <h3>PM10</h3>
+              <svg id="linechartPM10"></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 1%; margin-left: 5%; margin-right: 5%">
+        <div class="card card-body mb-3" style="border-color: lightgrey; box-shadow: 10px 10px 5px #aaaaaa; height: 100%" >
+          <div class="row">
+            <div class="col-md-6" style="text-align: center">
+              <h3>PM2.5</h3>
+              <svg id="linechartPM25"></svg>
+              </div>
+            <div class="col-md-6" style="text-align: center">
+              <h3>PM1</h3>
+              <svg id="linechartPM1"></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+</body>

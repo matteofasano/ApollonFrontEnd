@@ -1,0 +1,13 @@
+INSTALLAZIONI
+1. Installare npm (v6.4.1) se non si è in possesso di una versione di node
+    https://www.npmjs.com/get-npm
+2. Installare ng-cli
+    npm install -g ng-cli
+
+CONFIGURAZIONI
+1. Posizionarsi da terminale nella cartella root di progetto e installare le dipendenze:
+    npm install
+    
+AVVIO FRONTEND
+1. Posizionarsi da terminale nella cartella root di progetto e digitare:
+    ng serve
